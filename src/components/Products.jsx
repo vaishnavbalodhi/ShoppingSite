@@ -1,26 +1,40 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
+import { fetchProducts } from '../store/productSlice';
+import { STATUSES } from '../store/productSlice';
 
 const Products = () => {
 
     const dispatch = useDispatch();
+    //renaming data as products
+    const {data: products, status} = useSelector(state => state.product)
 
-    const [products, setProducts] = useState([]);
+    // const [products, setProducts] = useState([]);
     useEffect(() => {
-      const fetchProducts = async () => {
-        const res = await fetch('https://fakestoreapi.com/products');
-            const data = await res.json();
-            console.log(data);
-            setProducts(data) 
-        }
+
+        dispatch(fetchProducts());
+        
+    //   const fetchProducts = async () => {
+    //     const res = await fetch('https://fakestoreapi.com/products');
+    //         const data = await res.json();
+    //         setProducts(data) 
+    //     }
       
-      fetchProducts();
+    //   fetchProducts();
 
     }, [])
     
     const handleAdd = (product) => {
         dispatch(addToCart(product))
+    }
+
+    if(status === STATUSES.LOADING){
+        return <h2>loading.....</h2>
+    }
+
+    if(status === STATUSES.ERROR){
+        return <h2>Something went wrong</h2>
     }
 
     return <div className='grid md:grid-cols-4 grid-cols-2 gap-5 p-5'>
